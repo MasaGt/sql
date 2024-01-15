@@ -1,0 +1,25 @@
+# Read values for DB from .env
+services:
+  mysql:
+    image: mysql
+    container_name: db-test
+    volumes:
+      - db_vol:/var/lib/mysql
+    networks:
+      - db_net
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=${DB}
+      - MYSQL_ROOT_PASSWORD=${ROOTPASS}
+      - MYSQL_USER=${USER}
+      - MYSQL_PASSWORD=${PASS}
+    restart: always
+
+networks:
+  db_net:
+    name: db_net
+
+volumes:
+  db_vol:
+    name: db_vol
