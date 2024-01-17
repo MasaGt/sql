@@ -52,5 +52,44 @@ ALTER TABLE <table_name> MODIFY (COLUMN) <対象のカラム名> <新しいカ�
 ### カラム名とカラム定義の変更
 
 ```sql
-ALTER TABLE <table_name> CHANGE (COLUMN) <リネーム対象カラム名> <リネーム後のカラム名> <新しいカラム名>
+ALTER TABLE <table_name> CHANGE (COLUMN) <リネーム対象カラム名> <リネーム後のカラム名> <新しいカラム定義>
 ```
+*定義の変更(MODIFY/CHANGE)はデータ型やUNIQE/NOT NULL制約の追加などのために行う
+*ALTER TABLEによる<font color="red">主キー、外部キーの設定</font>は**MODIFY/CHANGEではなくADD CONSTRAINT**を使う
+
+---
+
+### 既存カラムへのキー設定を行う
+
+```sql
+ALTER TABLE <table_name> ADD (CONSTRAINT) <const_name> <col_name>;
+```
+
+<br>
+
+例
+```sql
+-- 主キー設定の追加
+ALTER TABLE student ADD CONSTRAINT PRIMAEY KEY (id);
+
+-- 複合きー設定の追加
+ALTER TABLE attendance ADD CONSTRAINT FOREIGN KEY (studnet_id) REFERENCES stundet (id);
+```
+
+---
+
+### キー制約の削除
+
+*MySQLの場合CONSTRAINTは書いちゃダメ
+
+```sql
+ALTER TABLE <table_name> DROP (CONSTRAINT) PRIMARY KEY;
+```
+*複合主キーが設定されていた場合、すべてのカラムの主キー設定が削除される
+
+<br>
+
+```sql
+ALTER TABLE <table_name> DROP (CONSTRAINT) FOREIGN KEY <制約名>
+```
+*制約名はSHOW CREATE TABLE <table_name>;で確認できる
