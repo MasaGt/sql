@@ -55,7 +55,7 @@ SELECT * FROM students ORDER BY age;
 SELECT <col> FROM <table> (WHERE ~) LIMIT <row_num> (OFFSET <omit_row_num>)
 ```
 *検索結果の先頭からrow_num行分の検索結果を表示する  
-*OFFSETを指定した場合は,omit_row_num番目の行からrow_num行分表示する
+*OFFSETを指定した場合は,omit_row_num行数文スキップしてrow_num行分表示する
 
 <br>
 
@@ -78,58 +78,98 @@ SELECT <cols> FROM <table1>
 UNION (ALL)
 SELECT <cols> FROM <table2>;
 ```
-*UNIONは通常超副業を1行にまとめる  
+*UNIONは通常重複行を1行にまとめる  
 *ALLを指定した場合、重複行をまとめずに全て表示する
 
 <br>
 
-例: 　シティキャンパスとノースキャンパスの学生の名前を表示する
+例: ラグビークラブとバスケットボールクラブの部員の情報を取得する(両方所属している/片方にしか所属していない の両方とも取得する)
+
+<img src="./img/union-except-intersect1.png" />
+<img src="./img/union-except-intersect2.png" />
+
+<br>
 
 ```sql
-SELECT name FROM city_campus
+SELECT name FROM rubgy_club;
 UNION
-SELECT name FROM north_campus;
+SELECT name FROM basketball_club;
 ```
+
+result
+<img src="./img/union1.png" />
+
+<br>
+
+もし、UNION ALLだったら  
+->両方に所属している部員が2回でてくる(BobとApple)
+<img src="./img/union2.png" />
 
 ---
 
-###  MINUS (EXCEPT)
+###  EXCEPT (MINUS)
 
 - 複数の検索結果から、重複分を取り除いたものを表示  
-    **\*MINUS (EXCEPT)の後の順番に注意**
+    **\*EXCEPT (MINUS)の後の順番に注意**
 <img src="./img/minus.png" />
 
     [SQL MINUS](https://www.sqltutorial.org/sql-minus/)
 
 ```sql
 SELECT <cols> FROM <tableA>
-MINUS (ALL)
+EXCEPT (ALL)
 SELECT <cols> FROM <tableB>;
 ```
+**ALLをつけると重複行を1つにまとめないで表示する  
 
-TODO:　ALLの時の挙動を説明する
+```sql
+例: EXCEPT と EXCEPT ALLの違い
+
+tableAのデータ
+A
+A
+B
+C
+
+tableBのデータ
+B
+
+tableA EXCEPT tableB
+-> A, C
+
+tableA EXCEPT ALL tableB
+-> A, A, C
+```
 
 <br>
 
 例: ラグビークラブとバスケットボールクラブのどちらか一方にしか所属していない生徒の情報を取得する
 ```sql
 SELECT name FROM rugby_club
-MINUS
+EXCEPT
 SELECT name FROM basketball_club;
 ```
 
-- 以下は同じ結果になるとは限らない
-    - \<tableA\> MINUS \<tableB\>
-    - \<tableB\> MINUS \<tableA\>
+<br>
 
-TODO:　理由を説明する
+result
+<img src="./img/minus1.png" />
+
+- 以下は同じ結果になるとは限らない
+    - \<tableA\> EXCEPT \<tableB\>
+    - \<tableB\> EXCEPT \<tableA\>
+
+もしbasketball_club except rugby_clubだったら
+<img src="./img/minus2.png" />
+
+理由: \<tableA\> EXCEPT \<tableB\> は tableAからtableBにあるデータを除いたものを表示するから  
 
 ---
 
 ### INTERSECT
 
 - 複数の検索で重複するものを表示
-<img src="./img/intersept.png" />
+<img src="./img/intersect.png" />
 
     [SQL Server INTERSECT](https://www.sqlservertutorial.net/sql-server-basics/sql-server-intersect/)
 
@@ -138,8 +178,28 @@ SELECT <cols> FROM <T1>
 INTERSECT (ALL)
 SELECT <cols> FROM <T2>;
 ```
+*ALLをつけると重複行を1つにまとめないで表示する  
 
-TODO: ALLの時の挙動を説明する
+```
+例: INTERSECT と INTERSECT ALLの違い
+
+tableAのデータ
+A
+B
+C
+
+tableBのデータ
+A
+B
+B
+C
+
+tableA INTERSECT tableB
+-> A, B, C
+
+tableA INTERSECT ALL tableB
+-> A, B, B, C
+```
 
 <br>
 
@@ -149,6 +209,11 @@ SELECT name FROM rugby_club
 INTERSECT
 SELECT name FROM basketball_club;
 ```
+
+<br>
+
+result
+<img src="./img/intersect1.png" />
 
 ---
 
@@ -165,7 +230,15 @@ SELECT name FROM basketball_club;
     ```sql
     SELECT <col1> <col2> <col3> FROM <table1>
     UNION
-    SELECt <col1> <col2> NULL FROM <table2>
+    SELECT <col1> <col2> NULL FROM <table2>
+    ```
+
+- ORDER BYを使う時は、最後の行のみに使う
+    ```sql
+    SELECT <col1> <col2> FROM <table1>
+    UNION/EXCEPT/INTERSECT
+    SELECT <col1> <col2> FROM <table2>
+    ORDER BY <col~>; -- ここにORDER BYの条件を書く
     ```
 
 ---
