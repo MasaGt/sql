@@ -79,7 +79,7 @@ Isolationの補足
 ```sql
 -- transfore 100NZD from A to B
 
-BEGIN;
+BEGIN; -- もしくは START TRANSACTION
 
 UPDATE BANK SET balance=blance-100 WHERE user="A";
 
