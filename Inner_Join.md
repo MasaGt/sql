@@ -34,6 +34,7 @@ ON <tableA_col> = <tableB_col>
 
 例:　以下のようなテーブルがある  
 学生名とその学生の出身国名を表示したい
+
 <img src="./img/student_country_relation.png" />
 
 ```sql
