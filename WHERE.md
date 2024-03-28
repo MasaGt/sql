@@ -73,6 +73,17 @@ WHERE <col> IN (<val1>, ..., <valX>);
 WHERE <col> NOT IN (<val1>, ... <valX>);
 ```
 
+<br>
+
+*NOT INにNULLを含めてはダメ  
+
+```
+<col> NOT IN (val, .. NULL)
+↑はcolがvalと同じ値ではない場合TRUEないし1に評価される。
+(DBMSによるが)colがNULLと比較されるとunknownに評価される。
+NOT INはTRUEないし、1に評価されたものをものを表示対象にするので、colがvalと同じ値ではなくても、必ずNULLとの比較でunknownになり表示の対象にならなくなる。
+```
+
 例: 出身がamerica, canada, Australiaの生徒の情報を取得
 ```sql
 SELECT * FROM students WHERE country IN ("USA", "CA", "AU");
@@ -140,3 +151,4 @@ WHERE NOT <condition>;
 SELECT * FROM students WHERE NOT country = "USA";
 ```
 
+- SOME: ANYと同じ
